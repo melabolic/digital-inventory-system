@@ -2,10 +2,11 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:sqflite_app/assets/color_swatch.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite_app/models/item.dart';
 import 'package:sqflite_app/utils/database_helper.dart';
-// import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:sqflite_app/assets/custom_fonts.dart';
 
 class InputFields extends StatefulWidget {
   final Item item;
@@ -35,7 +36,6 @@ class _InputFieldsState extends State<InputFields> {
 
   @override
   Widget build(BuildContext context) {
-
     currentDate = DateTime.parse(item.expiryDate);
 
     nameController.text = item.name;
@@ -54,7 +54,11 @@ class _InputFieldsState extends State<InputFields> {
             onPressed: () =>
                 moveToLastScreen(), // takes us back to the last screen
           ),
-          title: Text(appBarTitle),
+          title: Text(
+            appBarTitle,
+            style: headerStyle,
+          ),
+          centerTitle: true,
         ),
         body: _mainBody(), // main code that displays the input fields
       ),
@@ -71,8 +75,10 @@ class _InputFieldsState extends State<InputFields> {
           children: <Widget>[
             // updating the name entry
             Padding(
-              padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+              padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
               child: TextFormField(
+                style: bodyStyle2,
+                autofocus: true,
                 textCapitalization: TextCapitalization.words,
                 controller: nameController,
                 validator: (String value) {
@@ -89,23 +95,25 @@ class _InputFieldsState extends State<InputFields> {
                 },
                 decoration: InputDecoration(
                     labelText: 'Item Name',
+                    labelStyle: bodyStyle2,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0))),
               ),
             ),
             // updating the expiry date
             Padding(
-              padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+              padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
               child: DateTimeField(
+                style: bodyStyle2,
                 format: DateFormat('yyyy-MM-dd'),
                 initialValue: currentDate,
                 onShowPicker: (context, currentValue) {
                   return DatePicker.showDatePicker(
                     context,
                     theme: DatePickerTheme(
-                        cancelStyle: const TextStyle(color: Colors.white),
-                        itemStyle: const TextStyle(color: Colors.white),
-                        doneStyle: const TextStyle(fontWeight: FontWeight.w600),
+                        cancelStyle: cancelStyle,
+                        itemStyle: itemStyle,
+                        doneStyle: doneStyle,
                         backgroundColor: Theme.of(context).primaryColor),
                     showTitleActions: true,
                     minTime: DateTime(2000, 1, 1),
@@ -119,14 +127,16 @@ class _InputFieldsState extends State<InputFields> {
                 },
                 decoration: InputDecoration(
                     labelText: 'Item Best Before',
+                    labelStyle: bodyStyle2,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0))),
               ),
             ),
             // updating the weight entry
             Padding(
-              padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+              padding: EdgeInsets.only(top: 12.0, bottom: 12.0),
               child: TextFormField(
+                style: bodyStyle2,
                 controller: weightController,
                 validator: (String value) {
                   if (value.isEmpty) {
@@ -142,23 +152,29 @@ class _InputFieldsState extends State<InputFields> {
                 },
                 decoration: InputDecoration(
                     labelText: 'Weight (in grams)',
+                    labelStyle: bodyStyle2,
                     hintText: 'e.g. 200g',
+                    hintStyle: subtitleStyle,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0))),
               ),
             ),
             // Save and Delete Buttons
             Padding(
-              padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+              padding: EdgeInsets.only(
+                top: 12.0,
+              ),
               child: Row(
                 children: <Widget>[
                   Expanded(
                     child: RaisedButton(
-                      color: Theme.of(context).primaryColorLight,
+                      padding: EdgeInsets.only(top: 6.0, bottom: 8.0),
+                      color: accentColor,
                       textColor: Theme.of(context).primaryColorDark,
                       child: Text(
-                        'Save',
-                        textScaleFactor: 1.5,
+                        'SAVE',
+                        style: saveButtonStyle,
+                        textScaleFactor: 1.2,
                       ),
                       onPressed: () {
                         setState(
@@ -170,18 +186,22 @@ class _InputFieldsState extends State<InputFields> {
                           },
                         );
                       },
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
                     ),
                   ),
                   Container(
-                    width: 15.0,
+                    width: 24.0,
                   ),
                   Expanded(
                     child: RaisedButton(
-                      color: Theme.of(context).primaryColorLight,
-                      textColor: Theme.of(context).primaryColorDark,
+                      padding: EdgeInsets.only(top: 8.0, bottom: 10.0),
+                      color: mainBackground,
+                      textColor: accentColor,
                       child: Text(
-                        (item.id != null) ? 'Delete' : 'Cancel',
-                        textScaleFactor: 1.5,
+                        (item.id != null) ? 'DELETE' : 'CANCEL',
+                        style: delButtonStyle,
+                        textScaleFactor: 1.2,
                       ),
                       onPressed: () {
                         setState(() {
@@ -189,6 +209,10 @@ class _InputFieldsState extends State<InputFields> {
                           _delete();
                         });
                       },
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: accentColor),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
                     ),
                   ),
                 ],
