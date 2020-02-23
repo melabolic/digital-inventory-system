@@ -110,17 +110,12 @@ class _InputFieldsState extends State<InputFields> {
                     showTitleActions: true,
                     minTime: DateTime(2000, 1, 1),
                     maxTime: DateTime(2050, 12, 12),
-                    currentTime: DateTime.now(),
+                    currentTime: currentDate,
                     onChanged: (date) => debugPrint(date.toString()),
                     onConfirm: (date) {
                       updateDate(date);
                     },
                   );
-                },
-                validator: (DateTime date) {
-                  if (date.isAfter(DateTime.now()) == false) {
-                    return 'Item has already expired';
-                  }
                 },
                 decoration: InputDecoration(
                     labelText: 'Item Best Before',
@@ -205,10 +200,6 @@ class _InputFieldsState extends State<InputFields> {
     );
   }
 
-  Future<String> _formattedDate(DateTime date) async {
-    return DateFormat('yyyy-MM-dd').format(date).toString();
-  }
-
   void _save() async {
     moveToLastScreen();
     if (item.id != null) {
@@ -237,7 +228,7 @@ class _InputFieldsState extends State<InputFields> {
 
   void updateDate(DateTime date) {
     item.expiryDate = DateFormat('yyyy-MM-dd').format(date).toString();
-    print('new date: ${item.expiryDate}');
+    debugPrint('new date: ${item.expiryDate}');
   }
 
   void updateWeight() {

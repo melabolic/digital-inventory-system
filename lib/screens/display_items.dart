@@ -34,7 +34,8 @@ class _DisplayItemsState extends State<DisplayItems> {
         itemCount: count,
         itemBuilder: (BuildContext context, int position) {
           return Card(
-            color: Colors.white10,
+            // we want our cards to change color based on its expiry date
+            color: _getCardBackgroundColor(this.itemList[position].expiryDate), 
             elevation: 2.0,
             child: ListTile(
               title: Text(this.itemList[position].name),
@@ -108,4 +109,12 @@ class _DisplayItemsState extends State<DisplayItems> {
     print(count);
   }
 
+  Color _getCardBackgroundColor(String date) {
+    DateTime temp = DateTime.parse(date);
+    if (temp.isBefore(DateTime.now())) {
+      return Colors.red[400];
+    } else {
+      return Colors.white10;
+    }
+  }
 }
