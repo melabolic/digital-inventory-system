@@ -17,3 +17,6 @@ I started this project by first tackling the core proposition of the app: its di
 1. Allowing users to add a new food item to their inventory
 2. Edit the entries already present in the Database (SQLite is used to persist data)
 3. Update/delete entries in the database
+
+## Changelog
+1. 23/02/2020 - completed the base inventory system
