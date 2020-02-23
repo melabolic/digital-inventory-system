@@ -19,4 +19,5 @@ I started this project by first tackling the core proposition of the app: its di
 3. Update/delete entries in the database
 
 ## Changelog
-1. 23/02/2020 - completed the base inventory system
+1. 23/02/2020 - Completed the base inventory system
+2. 23/02/2020 - Added data validation functionalities and modified the date entry method
