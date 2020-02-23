@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_app/models/item.dart';
 import 'package:sqflite_app/screens/input_fields.dart';
@@ -27,7 +28,7 @@ class _DisplayItemsState extends State<DisplayItems> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Digital Inventory'),
+        title: Text('Your Inventory'),
       ),
       body: ListView.builder(
         itemCount: count,
@@ -38,7 +39,7 @@ class _DisplayItemsState extends State<DisplayItems> {
             child: ListTile(
               title: Text(this.itemList[position].name),
               subtitle:
-                  Text('Expiring: ${this.itemList[position].expiryDate}'),
+                  Text('Expiry: ' + _formatString(this.itemList[position].expiryDate)),
               trailing: GestureDetector(
                 child: Icon(Icons.delete),
                 onTap: () {
@@ -59,12 +60,13 @@ class _DisplayItemsState extends State<DisplayItems> {
         child: Icon(Icons.add),
         onPressed: () {
           print("FAB clicked");
-          _navigateToDetail(Item('', '', ''), 'New Item');
+          _navigateToDetail(Item('', DateTime.now().toString(), ''), 'New Item');
         },
       ),
     );
   }
 
+  // pushes the new route to our app
   void _navigateToDetail(Item item, String title) async {
     bool result = await Navigator.push(
       context,
@@ -77,12 +79,18 @@ class _DisplayItemsState extends State<DisplayItems> {
     }
   }
 
+  String _formatString(String date) {
+    return DateFormat.yMMMd().format(DateTime.parse(date));
+  }
+
+  // deletes entries from our database
   void _delete(BuildContext context, Item item) async {
     int result = await dbHelper.delete(item.id);
     print('deleted $result: ${item.name}');
     updateListView();
   }
 
+  // function that updates the ListView whenever a change has been made
   void updateListView() {
     final Future<Database> dbFuture = dbHelper.initDB();
     dbFuture.then((database) {

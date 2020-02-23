@@ -1,7 +1,11 @@
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite_app/models/item.dart';
 import 'package:sqflite_app/utils/database_helper.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
+// import 'package:flutter_masked_text/flutter_masked_text.dart';
 
 class InputFields extends StatefulWidget {
   final Item item;
@@ -27,14 +31,15 @@ class _InputFieldsState extends State<InputFields> {
 
   TextEditingController nameController = TextEditingController();
   TextEditingController weightController = TextEditingController();
-  MaskedTextController dateController =
-      MaskedTextController(mask: "00/00/0000");
+  DateTime currentDate;
 
   @override
   Widget build(BuildContext context) {
+
+    currentDate = DateTime.parse(item.expiryDate);
+
     nameController.text = item.name;
     weightController.text = item.weight;
-    dateController.text = item.expiryDate;
 
     // the widget WillPopScope enables us to control the leading buttons actions on the appbar
     return WillPopScope(
@@ -90,27 +95,39 @@ class _InputFieldsState extends State<InputFields> {
             ),
             // updating the expiry date
             Padding(
-                padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                child: TextFormField(
-                  controller: dateController,
-                  validator: (String value) {
-                    if (value.isEmpty) {
-                      return 'Expiry date is required';
-                    } else if (value.length < 10) {
-                      return 'Date is not valid';
-                    }
-                  },
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) {
-                    debugPrint(value);
-                    updateDate();
-                  },
-                  decoration: InputDecoration(
-                      hintText: "DD/MM/YYYY",
-                      labelText: 'Expiry Date',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0))),
-                )),
+              padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+              child: DateTimeField(
+                format: DateFormat('yyyy-MM-dd'),
+                initialValue: currentDate,
+                onShowPicker: (context, currentValue) {
+                  return DatePicker.showDatePicker(
+                    context,
+                    theme: DatePickerTheme(
+                        cancelStyle: const TextStyle(color: Colors.white),
+                        itemStyle: const TextStyle(color: Colors.white),
+                        doneStyle: const TextStyle(fontWeight: FontWeight.w600),
+                        backgroundColor: Theme.of(context).primaryColor),
+                    showTitleActions: true,
+                    minTime: DateTime(2000, 1, 1),
+                    maxTime: DateTime(2050, 12, 12),
+                    currentTime: DateTime.now(),
+                    onChanged: (date) => debugPrint(date.toString()),
+                    onConfirm: (date) {
+                      updateDate(date);
+                    },
+                  );
+                },
+                validator: (DateTime date) {
+                  if (date.isAfter(DateTime.now()) == false) {
+                    return 'Item has already expired';
+                  }
+                },
+                decoration: InputDecoration(
+                    labelText: 'Item Best Before',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+              ),
+            ),
             // updating the weight entry
             Padding(
               padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
@@ -119,6 +136,8 @@ class _InputFieldsState extends State<InputFields> {
                 validator: (String value) {
                   if (value.isEmpty) {
                     return 'Please enter the weight';
+                  } else if (int.parse(value) < 0) {
+                    return 'Weight is negative';
                   }
                 },
                 keyboardType: TextInputType.numberWithOptions(),
@@ -128,7 +147,7 @@ class _InputFieldsState extends State<InputFields> {
                 },
                 decoration: InputDecoration(
                     labelText: 'Weight (in grams)',
-                    hintText: '1kg = 1000g',
+                    hintText: 'e.g. 200g',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0))),
               ),
@@ -186,6 +205,10 @@ class _InputFieldsState extends State<InputFields> {
     );
   }
 
+  Future<String> _formattedDate(DateTime date) async {
+    return DateFormat('yyyy-MM-dd').format(date).toString();
+  }
+
   void _save() async {
     moveToLastScreen();
     if (item.id != null) {
@@ -212,8 +235,9 @@ class _InputFieldsState extends State<InputFields> {
     item.name = nameController.text;
   }
 
-  void updateDate() {
-    item.expiryDate = dateController.text;
+  void updateDate(DateTime date) {
+    item.expiryDate = DateFormat('yyyy-MM-dd').format(date).toString();
+    print('new date: ${item.expiryDate}');
   }
 
   void updateWeight() {
