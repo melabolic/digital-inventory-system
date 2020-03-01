@@ -78,7 +78,8 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> queryAll() async {
     Database dbClient = await db;
     print('$db');
-    return await dbClient.query(table);
+    // we're setting the database to query the dates in ascending order by default
+    return await dbClient.query(table, orderBy: '$colDate');
   }
 
   // delete

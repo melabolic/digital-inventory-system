@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_app/assets/color_swatch.dart';
 import 'package:sqflite_app/models/item.dart';
 import 'package:sqflite_app/screens/input_fields.dart';
 import 'package:sqflite_app/utils/database_helper.dart';
+import 'package:sqflite_app/assets/custom_fonts.dart';
 
 class DisplayItems extends StatefulWidget {
   @override
@@ -12,7 +14,7 @@ class DisplayItems extends StatefulWidget {
 
 class _DisplayItemsState extends State<DisplayItems> {
   DatabaseHelper dbHelper = DatabaseHelper();
-  
+
   List<Item> itemList;
   int count = 0;
 
@@ -27,29 +29,44 @@ class _DisplayItemsState extends State<DisplayItems> {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text('Your Inventory'),
+        centerTitle: false,
+        // creating the title head with a preset font
+        title: Text(
+          'Your Inventory',
+          textAlign: TextAlign.left,
+          style: headerStyle,
+        ),
       ),
       body: ListView.builder(
         itemCount: count,
         itemBuilder: (BuildContext context, int position) {
-          return Card(
-            color: Colors.white10,
-            elevation: 2.0,
-            child: ListTile(
-              title: Text(this.itemList[position].name),
-              subtitle:
-                  Text('Expiry: ' + _formatString(this.itemList[position].expiryDate)),
-              trailing: GestureDetector(
-                child: Icon(Icons.delete),
+          return Padding(
+            padding: EdgeInsets.only(top: 4.0, left: 10.0, right: 10.0),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              // we want our cards to change color based on its expiry date
+              color:
+                  _getCardBackgroundColor(this.itemList[position].expiryDate),
+              elevation: 2.0,
+              child: ListTile(
+                title: Text(this.itemList[position].name, style: bodyStyle),
+                subtitle: Text(
+                  'Expiry: ' +
+                      _formatString(this.itemList[position].expiryDate),
+                  style: subtitleStyle,
+                ),
+                trailing: GestureDetector(
+                  child: Icon(Icons.delete),
+                  onTap: () {
+                    _delete(context, this.itemList[position]);
+                  },
+                ),
                 onTap: () {
-                  _delete(context, this.itemList[position]);
+                  debugPrint('ListTile tapped');
+                  _navigateToDetail(this.itemList[position], 'Edit Item');
                 },
               ),
-              onTap: () {
-                debugPrint('ListTile tapped');
-                _navigateToDetail(this.itemList[position], 'Edit Item');
-              },
             ),
           );
         },
@@ -60,7 +77,8 @@ class _DisplayItemsState extends State<DisplayItems> {
         child: Icon(Icons.add),
         onPressed: () {
           print("FAB clicked");
-          _navigateToDetail(Item('', DateTime.now().toString(), ''), 'New Item');
+          _navigateToDetail(
+              Item('', DateTime.now().toString(), ''), 'New Item');
         },
       ),
     );
@@ -108,4 +126,16 @@ class _DisplayItemsState extends State<DisplayItems> {
     print(count);
   }
 
+  Color _getCardBackgroundColor(String date) {
+    DateTime temp = DateTime.parse(date);
+    var difference = temp.difference(DateTime.now());
+    if (temp.isBefore(DateTime.now())) {
+      return errorColor;
+    } else if (difference.inDays <= 7) {
+      return almostExpiring;
+    }
+    else {
+      return cardBackground;
+    }
+  }
 }
