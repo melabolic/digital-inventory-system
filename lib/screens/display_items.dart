@@ -7,26 +7,21 @@ import 'package:sqflite_app/screens/input_fields.dart';
 import 'package:sqflite_app/utils/database_helper.dart';
 import 'package:sqflite_app/assets/custom_fonts.dart';
 
-class DisplayItems extends StatefulWidget {
-  @override
-  _DisplayItemsState createState() => _DisplayItemsState();
-}
+/* Since a major aspect of Flutter is the rendering of pixels on the screen, it is
+common practice to separate items we need to be re-rendering with ones that we only need to
+render once. 
 
-class _DisplayItemsState extends State<DisplayItems> {
-  DatabaseHelper dbHelper = DatabaseHelper();
+In this file, we create two separate widgets:
 
-  List<Item> itemList;
-  int count = 0;
+1. The InventoryHeader widget: an immutable widget that renders only the appbar
+2. The DisplayItem widget: A stateful widget that updates itself according to the user
+inputs.  
 
-  String get result => null;
-
+This practice follows the industrial standards (#webstandards) to improve performance of
+the application on a device. */
+class InventoryHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (itemList == null) {
-      itemList = List<Item>();
-      updateListView();
-    }
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -37,6 +32,36 @@ class _DisplayItemsState extends State<DisplayItems> {
           style: headerStyle,
         ),
       ),
+      body: DisplayItem()
+    );
+  }
+}
+
+class DisplayItem extends StatefulWidget {
+  @override
+  _DisplayItemState createState() => _DisplayItemState();
+}
+
+class _DisplayItemState extends State<DisplayItem> {
+  DatabaseHelper dbHelper = DatabaseHelper();
+
+  // initializing our item list and object count
+  List<Item> itemList;
+  int count = 0;
+
+  String get result => null;
+
+  @override
+  Widget build(BuildContext context) {
+    // when the program first boots up, we want it to update the item list
+    // based on what's already in our database
+    if (itemList == null) {
+      itemList = List<Item>();
+      updateListView();
+    }
+
+    return Scaffold(
+      // this section here is what maintains and updates our inventory list
       body: ListView.builder(
         itemCount: count,
         itemBuilder: (BuildContext context, int position) {
@@ -45,10 +70,11 @@ class _DisplayItemsState extends State<DisplayItems> {
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0)),
-              // we want our cards to change color based on its expiry date
               color:
+                  // we want our cards to change color based on its expiry date
                   _getCardBackgroundColor(this.itemList[position].expiryDate),
               elevation: 2.0,
+              // creates our item object with a name, expiry date, and tappable delete icon
               child: ListTile(
                 title: Text(this.itemList[position].name, style: bodyStyle),
                 subtitle: Text(
@@ -126,6 +152,7 @@ class _DisplayItemsState extends State<DisplayItems> {
     print(count);
   }
 
+  // determines the background color for the specific card item
   Color _getCardBackgroundColor(String date) {
     DateTime temp = DateTime.parse(date);
     var difference = temp.difference(DateTime.now());
@@ -133,8 +160,7 @@ class _DisplayItemsState extends State<DisplayItems> {
       return errorColor;
     } else if (difference.inDays <= 7) {
       return almostExpiring;
-    }
-    else {
+    } else {
       return cardBackground;
     }
   }
