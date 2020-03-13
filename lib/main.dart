@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       title: 'SQFlite Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: DisplayItems(),
+      home: InventoryHeader(),
     );
   }
 }

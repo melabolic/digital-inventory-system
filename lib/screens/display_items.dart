@@ -7,12 +7,42 @@ import 'package:sqflite_app/screens/input_fields.dart';
 import 'package:sqflite_app/utils/database_helper.dart';
 import 'package:sqflite_app/assets/custom_fonts.dart';
 
-class DisplayItems extends StatefulWidget {
+/* Since a major aspect of Flutter is the rendering of pixels on the screen, it is
+common practice to separate items we need to be re-rendering with ones that we only need to
+render once. 
+
+In this file, we create two separate widgets:
+
+1. The InventoryHeader widget: an immutable widget that renders only the appbar
+2. The DisplayItem widget: A stateful widget that updates itself according to the user
+inputs.  
+
+This practice follows the industrial standards (#webstandards) to improve performance of
+the application on a device. */
+class InventoryHeader extends StatelessWidget {
   @override
-  _DisplayItemsState createState() => _DisplayItemsState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        // creating the title head with a preset font
+        title: Text(
+          'Your Inventory',
+          textAlign: TextAlign.left,
+          style: headerStyle,
+        ),
+      ),
+      body: DisplayItem()
+    );
+  }
 }
 
-class _DisplayItemsState extends State<DisplayItems> {
+class DisplayItem extends StatefulWidget {
+  @override
+  _DisplayItemState createState() => _DisplayItemState();
+}
+
+class _DisplayItemState extends State<DisplayItem> {
   DatabaseHelper dbHelper = DatabaseHelper();
 
   // initializing our item list and object count
@@ -31,15 +61,6 @@ class _DisplayItemsState extends State<DisplayItems> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        // creating the title head with a preset font
-        title: Text(
-          'Your Inventory',
-          textAlign: TextAlign.left,
-          style: headerStyle,
-        ),
-      ),
       // this section here is what maintains and updates our inventory list
       body: ListView.builder(
         itemCount: count,
@@ -139,8 +160,7 @@ class _DisplayItemsState extends State<DisplayItems> {
       return errorColor;
     } else if (difference.inDays <= 7) {
       return almostExpiring;
-    }
-    else {
+    } else {
       return cardBackground;
     }
   }
