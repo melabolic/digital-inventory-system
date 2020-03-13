@@ -12,6 +12,7 @@ class InputFields extends StatefulWidget {
   final Item item;
   final String appBarTitle;
 
+  // instantiating the arguments here that were inherited from the display_items.dart file
   InputFields(this.item, this.appBarTitle);
 
   @override
@@ -29,14 +30,15 @@ class _InputFieldsState extends State<InputFields> {
   String appBarTitle;
   _InputFieldsState(this.item, this.appBarTitle);
 
+  // instantiating the text controllers
   TextEditingController nameController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   DateTime currentDate;
 
   @override
   Widget build(BuildContext context) {
+    // sets the date, label, and weight of an item to its existing values if they exist
     currentDate = DateTime.parse(item.expiryDate);
-
     nameController.text = item.name;
     weightController.text = item.weight;
 
@@ -223,7 +225,7 @@ class _InputFieldsState extends State<InputFields> {
     );
   }
 
-  /* These functions help us save, delete, and revert to the previous screen */
+  /* These functions help us save and delete an entry */
   void _save() async {
     moveToLastScreen();
     if (item.id != null) {
@@ -246,6 +248,8 @@ class _InputFieldsState extends State<InputFields> {
     await databaseHelper.delete(item.id);
   }
 
+  /* This function takes us back to the previous screen  and returns a value true 
+  that indicates that a change has been made */
   void moveToLastScreen() {
     Navigator.pop(context, true);
   }

@@ -22,3 +22,4 @@ I started this project by first tackling the core proposition of the app: its di
 1. 23/02/2020 - Completed the base inventory system
 2. 23/02/2020 - Added data validation functionalities and modified the date entry method
 3. 24/02/2020 - Modified the UI of the inventory to reflect desired look; added card colors based on expiration dates
+4. 13/03/2020 - Modified the `display_items.dart` file so that we would only need to render the ListView after a new change has been made. More comments were added for more clarity.
