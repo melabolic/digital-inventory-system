@@ -27,7 +27,6 @@ class _InputFieldsState extends State<InputFields> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   Item item;
   String appBarTitle;
-
   _InputFieldsState(this.item, this.appBarTitle);
 
   TextEditingController nameController = TextEditingController();
@@ -159,7 +158,7 @@ class _InputFieldsState extends State<InputFields> {
                         borderRadius: BorderRadius.circular(10.0))),
               ),
             ),
-            // Save and Delete Buttons
+            // Save and Delete Buttons (with lots of formatting)
             Padding(
               padding: EdgeInsets.only(
                 top: 12.0,
@@ -224,6 +223,7 @@ class _InputFieldsState extends State<InputFields> {
     );
   }
 
+  /* These functions help us save, delete, and revert to the previous screen */
   void _save() async {
     moveToLastScreen();
     if (item.id != null) {
@@ -246,6 +246,11 @@ class _InputFieldsState extends State<InputFields> {
     await databaseHelper.delete(item.id);
   }
 
+  void moveToLastScreen() {
+    Navigator.pop(context, true);
+  }
+
+  /* The functions below helps us update our entry fields for an item */
   void updateName() {
     item.name = nameController.text;
   }
@@ -259,7 +264,4 @@ class _InputFieldsState extends State<InputFields> {
     item.weight = weightController.text;
   }
 
-  void moveToLastScreen() {
-    Navigator.pop(context, true);
-  }
 }

@@ -15,6 +15,7 @@ class DisplayItems extends StatefulWidget {
 class _DisplayItemsState extends State<DisplayItems> {
   DatabaseHelper dbHelper = DatabaseHelper();
 
+  // initializing our item list and object count
   List<Item> itemList;
   int count = 0;
 
@@ -22,6 +23,8 @@ class _DisplayItemsState extends State<DisplayItems> {
 
   @override
   Widget build(BuildContext context) {
+    // when the program first boots up, we want it to update the item list
+    // based on what's already in our database
     if (itemList == null) {
       itemList = List<Item>();
       updateListView();
@@ -37,6 +40,7 @@ class _DisplayItemsState extends State<DisplayItems> {
           style: headerStyle,
         ),
       ),
+      // this section here is what maintains and updates our inventory list
       body: ListView.builder(
         itemCount: count,
         itemBuilder: (BuildContext context, int position) {
@@ -45,10 +49,11 @@ class _DisplayItemsState extends State<DisplayItems> {
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0)),
-              // we want our cards to change color based on its expiry date
               color:
+                  // we want our cards to change color based on its expiry date
                   _getCardBackgroundColor(this.itemList[position].expiryDate),
               elevation: 2.0,
+              // creates our item object with a name, expiry date, and tappable delete icon
               child: ListTile(
                 title: Text(this.itemList[position].name, style: bodyStyle),
                 subtitle: Text(
@@ -126,6 +131,7 @@ class _DisplayItemsState extends State<DisplayItems> {
     print(count);
   }
 
+  // determines the background color for the specific card item
   Color _getCardBackgroundColor(String date) {
     DateTime temp = DateTime.parse(date);
     var difference = temp.difference(DateTime.now());
